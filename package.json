@@ -1,0 +1,22 @@
+{
+  "name": "finwise-india",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "setup:deps": "npm install && npm --prefix client install && npm --prefix server install",
+    "dev": "concurrently \"npm --prefix client run dev\" \"npm --prefix server run dev\"",
+    "dev:client": "npm --prefix client run dev",
+    "dev:server": "npm --prefix server run dev",
+    "build": "npm --prefix client run build",
+    "build:client": "npm --prefix client run build",
+    "seed:products": "npm --prefix server run seed:products",
+    "lint": "npm --prefix client run lint && npm --prefix server run lint",
+    "test": "npm --prefix client run test && npm --prefix server run test",
+    "format": "npm --prefix client run format && npm --prefix server run format"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.5"
+  }
+}
