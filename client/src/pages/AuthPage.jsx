@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function AuthPage({ mode = "login" }) {
@@ -20,17 +20,57 @@ export default function AuthPage({ mode = "login" }) {
     finally { setBusy(false); }
   }
 
-  return <div className="flex min-h-screen items-center justify-center bg-[#07111f] p-5">
-    <form onSubmit={submit} className="w-full max-w-md rounded-3xl border border-white/10 bg-[#101f32] p-8">
-      <div className="mb-2 text-sm font-semibold text-emerald-300">FINWISE INDIA</div>
-      <h1 className="text-3xl font-semibold">{isRegister ? "Create your account" : "Welcome back"}</h1>
-      <p className="mt-2 text-sm text-slate-400">Manage your money with clarity.</p>
-      {isRegister && <input required placeholder="Full name" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="mt-6 w-full rounded-xl border border-white/10 bg-[#07111f] p-3 outline-none focus:border-emerald-400"/>}
-      <input required type="email" placeholder="Email address" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} className="mt-4 w-full rounded-xl border border-white/10 bg-[#07111f] p-3 outline-none focus:border-emerald-400"/>
-      <input required minLength={10} type="password" placeholder="Password (minimum 10 characters)" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} className="mt-4 w-full rounded-xl border border-white/10 bg-[#07111f] p-3 outline-none focus:border-emerald-400"/>
-      {error && <p className="mt-3 text-sm text-rose-300">{error}</p>}
-      <button disabled={busy} className="mt-6 w-full rounded-xl bg-emerald-400 px-4 py-3 font-semibold text-[#062016] disabled:opacity-50">{busy ? "Please wait..." : isRegister ? "Create account" : "Sign in"}</button>
-      <p className="mt-5 text-center text-sm text-slate-400">{isRegister ? "Already registered?" : "New to FinWise?"} <a className="text-emerald-300" href={isRegister ? "/login" : "/register"}>{isRegister ? "Sign in" : "Create account"}</a></p>
-    </form>
-  </div>;
+  return (
+    <main className="auth-screen">
+      <div className="auth-glow auth-glow-one" aria-hidden="true" />
+      <div className="auth-glow auth-glow-two" aria-hidden="true" />
+      <div className="auth-grid" aria-hidden="true" />
+      <div className="auth-layout">
+        <section className="auth-intro">
+          <div className="auth-brand">
+            <span className="auth-brand-mark">F</span>
+            <span>FINWISE <b>INDIA</b></span>
+          </div>
+          <div className="auth-intro-copy">
+            <p className="auth-eyebrow">YOUR FINANCES, REIMAGINED</p>
+            <h2>Make every<br />rupee <span>count.</span></h2>
+            <p className="auth-description">A calmer, clearer way to understand your money and plan what comes next.</p>
+            <div className="auth-feature"><span className="auth-feature-dot" /> Built for your financial journey in India</div>
+          </div>
+          <p className="auth-footer">Personal finance, with a little more clarity.</p>
+        </section>
+
+        <section className="auth-card-wrap">
+          <form onSubmit={submit} className="auth-card">
+            <div className="auth-card-mark">₹</div>
+            <p className="auth-card-eyebrow">{isRegister ? "START YOUR JOURNEY" : "WELCOME TO FINWISE"}</p>
+            <h1>{isRegister ? "Create your account" : "Welcome back"}</h1>
+            <p className="auth-card-description">{isRegister ? "Set up your personal finance space." : "Sign in to your personal finance space."}</p>
+
+            {isRegister && (
+              <label className="auth-field">
+                <span>Full name</span>
+                <input required autoComplete="name" placeholder="Your name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+              </label>
+            )}
+            <label className="auth-field">
+              <span>Email address</span>
+              <input required autoComplete="email" type="email" placeholder="you@example.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+            </label>
+            <label className="auth-field">
+              <span>Password</span>
+              <input required minLength={8} autoComplete={isRegister ? "new-password" : "current-password"} type="password" placeholder="Minimum 10 characters" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
+            </label>
+            {error && <p className="auth-error" role="alert">{error}</p>}
+            <button disabled={busy} className="auth-submit">{busy ? "Please wait..." : isRegister ? "Create account" : "Sign in"}<span aria-hidden="true">→</span></button>
+            <p className="auth-switch">
+              {isRegister ? "Already have an account?" : "New to FinWise?"}{" "}
+              <Link to={isRegister ? "/login" : "/register"}>{isRegister ? "Sign in" : "Create account"}</Link>
+            </p>
+            <p className="auth-security"><span aria-hidden="true">◇</span> Your financial workspace, protected</p>
+          </form>
+        </section>
+      </div>
+    </main>
+  );
 }

@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Sidebar from "./components/Sidebar";
@@ -13,11 +13,35 @@ const AuthPage = lazy(() => import("./pages/AuthPage"));
 
 function Shell({ children }) {
   const { user } = useAuth();
-  return <div className="min-h-screen bg-[#07111f] text-slate-100 md:flex"><Sidebar/><main className="min-w-0 flex-1 p-5 md:p-8"><header className="mb-8 flex items-center justify-between border-b border-white/10 pb-5"><div><p className="text-xs uppercase tracking-widest text-slate-500">Personal finance workspace</p><p className="mt-1 text-sm text-slate-300">Welcome, {user?.name}</p></div><div className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-xs text-emerald-300">INR · India</div></header><div className="mx-auto max-w-7xl">{children}</div></main></div>;
+  return <div className="workspace-theme min-h-screen bg-[#07111f] text-slate-100 md:flex"><Sidebar/><main className="min-w-0 flex-1 p-5 md:p-8"><header className="mb-8 flex items-center justify-between border-b border-white/10 pb-5"><div><p className="text-xs uppercase tracking-widest text-slate-500">Personal finance workspace</p><p className="mt-1 text-sm text-slate-300">Welcome, {user?.name}</p></div><div className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-xs text-emerald-300">INR · India</div></header><div className="mx-auto max-w-7xl">{children}</div></main></div>;
 }
 
 function Protected({ children }) {
   return <ProtectedRoute><Shell>{children}</Shell></ProtectedRoute>;
+}
+
+function OpeningCurtain() {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const timeout = window.setTimeout(() => setVisible(false), reducedMotion ? 50 : 1900);
+    return () => window.clearTimeout(timeout);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div className="curtain-splash" aria-hidden="true">
+      <div className="curtain-panel curtain-panel-left" />
+      <div className="curtain-panel curtain-panel-right" />
+      <div className="curtain-brand">
+        <div className="curtain-mark"><span>F</span></div>
+        <p className="curtain-name">FinWise <span>India</span></p>
+        <p className="curtain-tagline">Your money, in focus.</p>
+      </div>
+    </div>
+  );
 }
 
 function AppRoutes() {
@@ -35,5 +59,5 @@ function AppRoutes() {
 }
 
 export default function App() {
-  return <AuthProvider><AppRoutes/></AuthProvider>;
+  return <AuthProvider><OpeningCurtain/><AppRoutes/></AuthProvider>;
 }
