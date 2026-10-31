@@ -20,13 +20,10 @@ for (const { sample, target, server } of envFiles) {
     await copyFile(path.join(root, sample), targetPath);
     if (server) {
       const contents = await readFile(targetPath, "utf8");
-      const secret = randomBytes(48).toString("base64url");
+      const jwtSecret = randomBytes(48).toString("base64url");
       await writeFile(
         targetPath,
-        contents.replace(
-          /^JWT_SECRET=.*$/m,
-          `JWT_SECRET=${secret}`
-        ),
+        contents.replace(/^JWT_SECRET=.*$/m, `JWT_SECRET=${jwtSecret}`),
         "utf8"
       );
     }

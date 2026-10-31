@@ -280,6 +280,51 @@ button, input, select { font: inherit; }
   font-size: 12px;
 }
 
+.auth-success {
+  margin: 14px 0 0;
+  color: #e0bd72;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.auth-method-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-top: 20px;
+  padding: 4px;
+  border: 1px solid rgb(255 255 255 / 7%);
+  border-radius: 12px;
+  background: rgb(0 0 0 / 22%);
+}
+
+.auth-method-switch button {
+  padding: 9px 7px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #96948d;
+  cursor: pointer;
+  font-size: 11px;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.auth-method-switch button.active {
+  background: rgb(215 173 98 / 13%);
+  color: #e0bd72;
+}
+
+.auth-resend {
+  margin-top: 12px;
+  border: 0;
+  background: transparent;
+  color: #e0bd72;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.auth-resend:disabled { cursor: wait; opacity: .6; }
+
 @keyframes auth-card-enter {
   from { opacity: 0; transform: translateY(14px) scale(.99); }
   to { opacity: 1; transform: translateY(0) scale(1); }

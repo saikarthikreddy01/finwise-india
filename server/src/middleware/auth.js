@@ -7,7 +7,7 @@ export async function requireAuth(req, res, next) {
     const token = header.startsWith("Bearer ") ? header.slice(7) : null;
     if (!token) return res.status(401).json({ message: "Authentication required" });
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(payload.sub).select("_id name email role");
+    const user = await User.findById(payload.sub).select("_id name email role phone phoneVerified firebaseUid");
     if (!user) return res.status(401).json({ message: "Invalid session" });
     req.user = user;
     next();

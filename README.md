@@ -22,7 +22,7 @@ npm run dev
 ```
 
 The client runs at <http://localhost:5173> and the API at <http://localhost:5000>.
-The setup command creates `server/.env` and `client/.env` from the checked-in examples, generating a random development JWT secret. Existing `.env` files are left untouched. If you do not use Docker, configure `MONGO_URI` in `server/.env` to point to your MongoDB instance before starting the API.
+The setup command creates `server/.env` and `client/.env` from the checked-in examples and generates a random development JWT secret. Existing `.env` files are left untouched. If you do not use Docker, configure `MONGO_URI` in `server/.env` to point to your MongoDB instance before starting the API.
 
 To load the illustrative product catalogue:
 
@@ -57,15 +57,25 @@ Run these from the project root:
 
 ## Environment variables
 
-See `server/.env.example` and `client/.env.example`. The server needs `MONGO_URI` and a private `JWT_SECRET`; the setup command generates a random local secret. Never commit real `.env` files or use development secrets in production.
+See `server/.env.example` and `client/.env.example`. Configure a Firebase Web app in `client/.env`, and set the Firebase Admin service-account JSON in `server/.env`. Keep the service-account JSON private; never expose it through `VITE_` variables or commit it. The setup command generates a local JWT secret but does not configure Firebase. Never commit real `.env` files or use development secrets in production.
+
+## OTP authentication
+
+- New registrations use Firebase email/password authentication and must verify the Firebase email link before a FinWise session is created. Sign-up will not work until the Firebase web and Admin credentials below are configured.
+- Sign in with email/password or Firebase phone authentication with SMS OTP. Firebase manages code issuance and verification; the API verifies Firebase ID tokens with the Admin SDK before issuing a FinWise API token.
+- To link a phone number, sign in with the Firebase email account and use **Phone login** in the sidebar. Firebase displays reCAPTCHA and verifies the SMS code.
+- In Firebase Console, enable **Email/Password** and **Phone** providers, add `localhost` and your deployed host to Authentication's authorized domains, and configure Firebase's email verification template.
+- Copy the Firebase web app's API key, Auth domain, Project ID, App ID, and Messaging sender ID into the matching `VITE_FIREBASE_*` entries in `client/.env`. Put the service-account JSON from Firebase Console → Project settings → Service accounts into `FIREBASE_SERVICE_ACCOUNT_JSON` in `server/.env`. The service-account JSON is a private server credential.
+- Firebase phone auth requires billing/region configuration and may require SMS test numbers during development. Do not create a client-side OTP bypass.
 
 ## API
 
 Base path: `/api/v1`.
 
 - `GET /health`
-- `POST /auth/register`, `POST /auth/login`
+- `POST /auth/firebase/session`
 - `GET /auth/me`, `POST /auth/logout`
+- `POST /auth/firebase/phone/link` (protected)
 - `GET, POST /accounts`
 - `GET, POST /transactions`, `DELETE /transactions/:id`
 - `GET, POST /budgets`
@@ -77,4 +87,4 @@ Protected endpoints require a bearer access token in the `Authorization` header.
 
 ## Before production
 
-This starter still needs a production-readiness review. At minimum, add account recovery and email verification, stronger session/token lifecycle management, authorization and API integration tests, deployment-specific HTTPS/CORS/secrets management, backups, monitoring, and rate-limit tuning. Review privacy and financial-product compliance with qualified professionals. Verify all financial calculations and changing product information with domain experts and current official sources.
+This starter still needs a production-readiness review. At minimum, add stronger session/token lifecycle management, authorization and API integration tests, deployment-specific HTTPS/CORS/secrets management, backups, monitoring, and distributed rate limiting. Review Firebase authentication settings, privacy, and financial-product compliance with qualified professionals. Verify all financial calculations and changing product information with domain experts and current official sources.
