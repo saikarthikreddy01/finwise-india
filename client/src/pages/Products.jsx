@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -13,7 +12,6 @@ import {
   Smartphone,
   Wallet
 } from "lucide-react";
-import api from "../services/api";
 
 const savingsOptions = [
   {
@@ -177,23 +175,6 @@ function SectionHeading({ id, eyebrow, title, description }) {
 }
 
 export default function Products() {
-  const [products, setProducts] = useState([]);
-  const [query, setQuery] = useState("");
-  const [studentsOnly, setStudentsOnly] = useState(false);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    api.get("/products")
-      .then(response => setProducts(response.data))
-      .catch(() => setError("Unable to load product catalogue"));
-  }, []);
-
-  const filteredProducts = products.filter(product => {
-    const matchesStudentFilter = !studentsOnly || product.isStudentFocused;
-    const searchText = `${product.name} ${product.provider} ${product.category} ${product.description}`;
-    return matchesStudentFilter && searchText.toLowerCase().includes(query.toLowerCase());
-  });
-
   return (
     <div className="space-y-14 pb-10">
       <section className="relative isolate overflow-hidden rounded-3xl border border-emerald-300/15 bg-gradient-to-br from-emerald-950 via-[#102b2b] to-[#101f32] p-6 shadow-2xl shadow-emerald-950/20 sm:p-10">
@@ -325,48 +306,6 @@ export default function Products() {
         </div>
       </section>
 
-      <section id="products-catalogue" className="scroll-mt-8 border-t border-white/10 pt-10">
-        <SectionHeading
-          eyebrow="Illustrative catalogue"
-          title="Explore example products"
-          description="These catalogue entries are examples, not current offers. Verify eligibility, rates, fees, and terms directly with official providers."
-        />
-        <div className="mt-5 flex flex-wrap items-center gap-3">
-          <label htmlFor="product-search" className="sr-only">Search products and details</label>
-          <input
-            id="product-search"
-            value={query}
-            onChange={event => setQuery(event.target.value)}
-            placeholder="Search products and details..."
-            className="w-full max-w-lg rounded-xl border border-white/10 bg-[#101f32] p-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20"
-          />
-          <button
-            type="button"
-            aria-pressed={studentsOnly}
-            onClick={() => setStudentsOnly(value => !value)}
-            className={`rounded-xl border px-4 py-3 text-sm transition focus:outline-none focus:ring-2 focus:ring-emerald-400 ${studentsOnly ? "border-emerald-400/40 bg-emerald-400/15 text-emerald-300" : "border-white/10 bg-[#101f32] text-slate-300 hover:border-white/20"}`}
-          >
-            Student-focused
-          </button>
-        </div>
-        {error && <p className="mt-4 text-rose-300" role="alert">{error}</p>}
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {filteredProducts.map(product => (
-            <article key={product._id} className="rounded-2xl border border-white/10 bg-[#101f32] p-5">
-              <div className="flex flex-wrap gap-2">
-                <p className="text-xs uppercase tracking-wider text-emerald-300">{product.category.replaceAll("_", " ")}</p>
-                {product.isStudentFocused && <p className="rounded-full bg-sky-400/10 px-2 py-0.5 text-xs text-sky-300">Student-focused</p>}
-              </div>
-              <h3 className="mt-2 text-lg font-semibold text-white">{product.name}</h3>
-              <p className="mt-1 text-sm text-slate-400">{product.provider}</p>
-              <p className="mt-4 text-sm leading-6 text-slate-300">{product.description}</p>
-              {product.indicativeRateMin != null && <p className="mt-4 text-sm">Indicative rate: <b>{product.indicativeRateMin}% – {product.indicativeRateMax}%</b></p>}
-              <p className="mt-4 text-xs text-amber-300">Demo data · Verify current terms</p>
-            </article>
-          ))}
-        </div>
-        {filteredProducts.length === 0 && <p className="mt-8 text-slate-500">No matching products.</p>}
-      </section>
 
       <aside className="flex gap-3 rounded-2xl border border-amber-300/15 bg-amber-300/[0.06] p-4 text-sm leading-6 text-amber-100/80" aria-label="Educational disclaimer">
         <ShieldCheck size={19} className="mt-0.5 shrink-0 text-amber-200" aria-hidden="true" />
