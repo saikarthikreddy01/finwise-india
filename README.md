@@ -24,11 +24,27 @@ npm run dev
 The client runs at <http://localhost:5173> and the API at <http://localhost:5000>.
 The setup command creates `server/.env` and `client/.env` from the checked-in examples and generates a random development JWT secret. Existing `.env` files are left untouched. If you do not use Docker, configure `MONGO_URI` in `server/.env` to point to your MongoDB instance before starting the API.
 
+## Deploy the full app to Netlify
+
+The Netlify site serves the Vite client and runs the Express API as a Netlify Function. The database must be hosted separately, for example with MongoDB Atlas.
+
+1. Push the project to a Git provider and import the repository in Netlify. Keep the base directory at the repository root; the checked-in `netlify.toml` configures the build, publish directory, and API function.
+2. Create a MongoDB database and database user, then add these variables under **Site configuration → Environment variables**:
+   - `MONGO_URI`: the MongoDB connection URI.
+   - `JWT_SECRET`: a newly generated, strong production secret. Do not reuse the development secret.
+   - `CLIENT_URL`: the exact origin of the Netlify site, such as `https://your-site.netlify.app`.
+3. Trigger a deploy after saving the variables. The client calls `/api/v1` on the same site, and the function serves API routes under that path.
+4. Verify the deployment at `https://your-site.netlify.app/api/v1/health`.
+
+`MONGO_URI`, `JWT_SECRET`, and `CLIENT_URL` are server-side settings; do not prefix them with `VITE_` or put their values in client files. `VITE_API_URL` is set to `/api/v1` by `netlify.toml`. Configure the database provider's network access for Netlify using a secure option supported by your plan; do not use a broadly open database access rule for production. The API's in-memory rate limiter is not shared across serverless instances, so add a distributed rate limiter before production use.
+
 To load the illustrative product catalogue:
 
 ```powershell
 npm run seed:products
 ```
+
+The demo catalogue includes student-focused savings, education-loan, scholarship, and long-term investing examples. These are educational examples, not current offers or personalized financial advice. Verify programme eligibility and product terms with official providers.
 
 To stop the optional MongoDB container:
 
@@ -57,25 +73,21 @@ Run these from the project root:
 
 ## Environment variables
 
-See `server/.env.example` and `client/.env.example`. Configure a Firebase Web app in `client/.env`, and set the Firebase Admin service-account JSON in `server/.env`. Keep the service-account JSON private; never expose it through `VITE_` variables or commit it. The setup command generates a local JWT secret but does not configure Firebase. Never commit real `.env` files or use development secrets in production.
+See `server/.env.example` and `client/.env.example`. The setup command generates a local JWT secret. Never commit real `.env` files or use development secrets in production.
 
-## OTP authentication
+## Authentication
 
-- New registrations use Firebase email/password authentication and must verify the Firebase email link before a FinWise session is created. Sign-up will not work until the Firebase web and Admin credentials below are configured.
-- Sign in with email/password or Firebase phone authentication with SMS OTP. Firebase manages code issuance and verification; the API verifies Firebase ID tokens with the Admin SDK before issuing a FinWise API token.
-- To link a phone number, sign in with the Firebase email account and use **Phone login** in the sidebar. Firebase displays reCAPTCHA and verifies the SMS code.
-- In Firebase Console, enable **Email/Password** and **Phone** providers, add `localhost` and your deployed host to Authentication's authorized domains, and configure Firebase's email verification template.
-- Copy the Firebase web app's API key, Auth domain, Project ID, App ID, and Messaging sender ID into the matching `VITE_FIREBASE_*` entries in `client/.env`. Put the service-account JSON from Firebase Console → Project settings → Service accounts into `FIREBASE_SERVICE_ACCOUNT_JSON` in `server/.env`. The service-account JSON is a private server credential.
-- Firebase phone auth requires billing/region configuration and may require SMS test numbers during development. Do not create a client-side OTP bypass.
+- Register with an email address and password, then sign in with those credentials. Passwords are hashed with bcrypt on the API; the API issues a signed FinWise access token.
+- Accounts created before this authentication change cannot sign in unless their passwords are migrated or reset by an administrator.
+- Email verification and phone/SMS sign-in are not supported.
 
 ## API
 
 Base path: `/api/v1`.
 
 - `GET /health`
-- `POST /auth/firebase/session`
+- `POST /auth/register`, `POST /auth/login`
 - `GET /auth/me`, `POST /auth/logout`
-- `POST /auth/firebase/phone/link` (protected)
 - `GET, POST /accounts`
 - `GET, POST /transactions`, `DELETE /transactions/:id`
 - `GET, POST /budgets`
@@ -87,4 +99,4 @@ Protected endpoints require a bearer access token in the `Authorization` header.
 
 ## Before production
 
-This starter still needs a production-readiness review. At minimum, add stronger session/token lifecycle management, authorization and API integration tests, deployment-specific HTTPS/CORS/secrets management, backups, monitoring, and distributed rate limiting. Review Firebase authentication settings, privacy, and financial-product compliance with qualified professionals. Verify all financial calculations and changing product information with domain experts and current official sources.
+This starter still needs a production-readiness review. At minimum, add stronger session/token lifecycle management, authorization and API integration tests, deployment-specific HTTPS/CORS/secrets management, backups, monitoring, and distributed rate limiting. Review authentication settings, privacy, and financial-product compliance with qualified professionals. Verify all financial calculations and changing product information with domain experts and current official sources.

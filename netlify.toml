@@ -1,0 +1,41 @@
+[build]
+  command = "npm ci --prefix server && npm ci --prefix client && npm --prefix client run build"
+  publish = "client/dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  VITE_API_URL = "/api/v1"
+
+[functions]
+  directory = "server/netlify/functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/login"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/register"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/transactions"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/calculators"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/goals"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/products"
+  to = "/index.html"
+  status = 200

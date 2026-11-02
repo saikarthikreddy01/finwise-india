@@ -9,7 +9,6 @@ const Transactions = lazy(() => import("./pages/Transactions"));
 const Calculators = lazy(() => import("./pages/Calculators"));
 const Goals = lazy(() => import("./pages/Goals"));
 const Products = lazy(() => import("./pages/Products"));
-const PhoneLoginSetup = lazy(() => import("./pages/PhoneLoginSetup"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 
 function Shell({ children }) {
@@ -55,7 +54,6 @@ function AppRoutes() {
     <Route path="/calculators" element={<Protected><Calculators/></Protected>}/>
     <Route path="/goals" element={<Protected><Goals/></Protected>}/>
     <Route path="/products" element={<Protected><Products/></Protected>}/>
-    <Route path="/phone-login" element={<Protected><PhoneLoginSetup/></Protected>}/>
     <Route path="*" element={<Navigate to="/"/>}/>
   </Routes></Suspense>;
 }

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
-import { createFirebaseSession, linkFirebasePhone, me } from "../controllers/authController.js";
+import { login, me, register } from "../controllers/authController.js";
 import {
   listAccounts, createAccount, listTransactions, createTransaction, deleteTransaction,
   listBudgets, createBudget, listGoals, createGoal, dashboardOverview, listProducts
@@ -19,10 +19,10 @@ const authAttemptLimit = rateLimit({
 });
 router.get("/health", (req, res) => res.json({ status: "ok", service: "finwise-api" }));
 
-router.post("/auth/firebase/session", authAttemptLimit, asyncHandler(createFirebaseSession));
+router.post("/auth/register", authAttemptLimit, asyncHandler(register));
+router.post("/auth/login", authAttemptLimit, asyncHandler(login));
 router.get("/auth/me", requireAuth, asyncHandler(me));
 router.post("/auth/logout", requireAuth, (req, res) => res.json({ message: "Logged out. Remove the access token on the client." }));
-router.post("/auth/firebase/phone/link", requireAuth, authAttemptLimit, asyncHandler(linkFirebasePhone));
 
 router.use(requireAuth);
 router.get("/accounts", asyncHandler(listAccounts));

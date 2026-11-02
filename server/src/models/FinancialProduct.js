@@ -9,6 +9,7 @@ const financialProductSchema = new mongoose.Schema({
   indicativeRateMax: Number,
   sourceUrl: String,
   verifiedAt: Date,
+  isStudentFocused: { type: Boolean, default: false },
   isDemo: { type: Boolean, default: true }
 }, { timestamps: true });
 

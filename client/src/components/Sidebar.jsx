@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Wallet, Calculator, Target, Landmark, LogOut, ChartNoAxesCombined, Smartphone } from "lucide-react";
+import { LayoutDashboard, Wallet, Calculator, Target, Landmark, LogOut, ChartNoAxesCombined } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const links = [
@@ -7,8 +7,7 @@ const links = [
   ["/transactions", "Transactions", Wallet],
   ["/calculators", "Calculators", Calculator],
   ["/goals", "Goals", Target],
-  ["/products", "Products", Landmark],
-  ["/phone-login", "Phone login", Smartphone]
+  ["/products", "Products", Landmark]
 ];
 
 export default function Sidebar() {
